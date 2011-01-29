@@ -13,7 +13,11 @@ import re
 import os
 import sys
 from optparse import OptionParser
-import elementtree.ElementTree
+try:
+    from xml.etree.ElementTree import XML
+except ImportError:
+    from elementtree.ElementTree import XML
+
 import codecs
 import cgi
 import time
@@ -45,7 +49,7 @@ class Mm2Notes:
       
     def xmlparse(self, text):
         """ import the XML text into self.et_in  """
-        return  elementtree.ElementTree.XML(text)
+        return  XML(text)
       
     def convert(self):
         """ Convert self.et_in to a HTML as a list of lines in S5 format """
