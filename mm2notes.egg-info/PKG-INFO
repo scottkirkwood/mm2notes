@@ -12,16 +12,16 @@ Description:
         mm2notes
         ========
         
-        Does some XML foo to get meeting notes out of your MM file.
-        FreeMind is great for taking notes very quickly and is highly recommended.
-        I sometimes project FreeMind on the overhead projector so that everyone can see the notes I'm taking.
+        Does some XML foo to get meeting notes out of your MM file.  
+        FreeMind is great for taking notes very quickly and is highly recommended.  
+        I sometimes project FreeMind on the overhead projector so that everyone can see the notes I'm taking.  
         The zoom feature (Alt-Down) is very handy so that it isn't too small.
         
-        After the meeting you might check-in the .mm file into a source control program
-        (if you are into that kind of thing) and then clean up the notes so that it makes more sense and only the salient points are kept.
+        After the meeting you might check-in the .mm file into a source control program 
+        (if you are into that kind of thing) and then clean up the notes so that it makes more sense and only the salient points are kept.  
         Then your run something like::
         
-        mm2notes WeeklyMeeting.mm -o WeeklyMeeting.html
+          mm2notes WeeklyMeeting.mm -o WeeklyMeeting.html
         
         
         To output the notes in HTML, which you can copy and paste to a variety of places.
@@ -49,9 +49,9 @@ Description:
         Requirements
         ------------
         
-        * `FreeMind <http://freemind.sourceforge.net/wiki/index.php/Main_Page>`_
-        * `Python <http://www.python.org/>`_
-        * `ElementTree http://effbot.org/zone/element-index.htm`_ which you'll have automatically if you run Python 2.5 or greater.
+          * `FreeMind <http://freemind.sourceforge.net/wiki/index.php/Main_Page>`_
+          * `Python <http://www.python.org/>`_
+          * `ElementTree http://effbot.org/zone/element-index.htm`_ which you'll have automatically if you run Python 2.5 or greater.
         
         
 Keywords: mm,FreeMind,notes,XML,text,meeting,Python
