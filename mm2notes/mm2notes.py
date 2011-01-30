@@ -1,16 +1,27 @@
 #!/usr/bin/env python
 # -*- encoding: latin1 -*-
 #
-# Copyright 2007 Scott Kirkwood
+# -*- coding: utf-8 -*-
+#
+# Copyright 2010 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-"""Convert a Memory Map File into Meeting Notes
-
-"""
+"""Convert a Memory Map File into Meeting Notes."""
 
 __author__ = 'scottkirkwood@google.com (Scott Kirkwood)'
+__version__ = '0.1.1'
 
-import re
-import os
 import sys
 from optparse import OptionParser
 try:
@@ -32,7 +43,7 @@ class Mm2Notes:
 
     def set_order_by_time(self, order_by_time):
         self.order_by_time = order_by_time
-        
+
     def open(self, infilename):
         """ Open the .mm file and create a notes as a list of lines """
         infile = file(infilename).read()
@@ -41,16 +52,16 @@ class Mm2Notes:
         return lines
 
     def write(self, outfile, lines):
-        """ Write out the lines, written as a convenience function 
+        """ Write out the lines, written as a convenience function
         """
         outfile.write(u'\n'.join(lines))
         outfile.write('\n')
-        
-      
+
+
     def xmlparse(self, text):
         """ import the XML text into self.et_in  """
         return  XML(text)
-      
+
     def convert(self):
         """ Convert self.et_in to a HTML as a list of lines in S5 format """
 
@@ -68,21 +79,21 @@ class Mm2Notes:
                 attendees = self.handleAttendees(node)
             elif self.starts_with(node_name, ['topic', 'subject']):
                 topic = self.handleTopic(node)
-            elif self.starts_with(node_name, ['discus', 'minutes', 
+            elif self.starts_with(node_name, ['discus', 'minutes',
                     'meeting', 'notes']):
                 discussed = self.handleDiscussed(node)
             elif self.starts_with(node_name, ['action', 'a.i', 'ai']):
                 actionitems = self.handleActionItems(node)
-        
-        return self.html_wrapper(self.handleTitle() + topic + attendees 
+
+        return self.html_wrapper(self.handleTitle() + topic + attendees
                 + actionitems + discussed)
-    
+
     def starts_with(self, name, list):
         for item in list:
             if name.lower().startswith(item):
                 return True
         return False
-        
+
     def html_wrapper(self, list):
       head = [
           '<?xml version="1.0" encoding="UTF-8"?>',
@@ -90,7 +101,7 @@ class Mm2Notes:
           '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
           '<html xmlns="http://www.w3.org/1999/xhtml">',
           '<head>',
-          '<title>%s</title>' % (self.title_text), 
+          '<title>%s</title>' % (self.title_text),
           '</head>',
           '<body>',
       ]
@@ -102,11 +113,11 @@ class Mm2Notes:
           return head + list + tail
       else:
           return list
-      
+
     def handleAttendees(self, node):
         topnodes = node.findall('node')
-        # find the maximum depth in the attendee lists           
-      
+        # find the maximum depth in the attendee lists
+
         mxd = self.maxdepth(topnodes)
         if mxd >= 3:
             # assume entity / attendee / email and ignore anything else
@@ -131,14 +142,14 @@ class Mm2Notes:
          return 1 + max(depths)
 
     def twoLevelAttendees(self, node):
-        """ Top node is the person's name, 
+        """ Top node is the person's name,
         If there's a sub node, it's the email, or something like that
         """
         names = []
         for line in node.findall('node'):
             fullname = line.attrib['TEXT']
             emailnodes = line.findall('node')
-            
+
             if emailnodes:
                 email = emailnodes[0].attrib['TEXT']
             else:
@@ -147,32 +158,32 @@ class Mm2Notes:
                 names.append('%s (%s)' % (fullname, email))
             else:
                 names.append('%s' % (fullname))
-        
+
         return names
-    
+
     def threeLevelAttendees(self, node):
         """ Here the top node is the location, the child nodes are the people """
-        
+
         locations= []
         for location in node.findall('node'):
             loc_name = location.attrib['TEXT']
             names = self.twoLevelAttendees(location)
             locations.append("%s [%s]" % (loc_name, ', '.join(names)))
-            
+
         return locations
 
     def handleTopic(self, node):
         text = []
         for line in node.findall('node'):
             text.append(line.attrib['TEXT'])
-        
+
         return [self.open_close('b', 'Topic: ') + ' '.join(text) + self.nl()]
 
     def nl(self):
         if self.as_html:
             return '<br/>\n'
         return '\n'
-    
+
     def handleDiscussed(self, node):
         people_time = []
         for sub in node.findall('node'):
@@ -204,39 +215,39 @@ class Mm2Notes:
                 else:
                     ret.append(name)
                 self.open_tag('ul', ret)
-                
+
             self.open_tag('li', ret)
             ret.append(text)
             self.close_tag('li', ret)
-            
+
         self.close_tag('ul', ret)
         self.close_tag('li', ret)
         self.close_tag('ul', ret)
-    
+
         return ret
 
     def handleTitle(self):
         if self.as_html:
             return ["<h3>%s</h3>" % (self.title_text)]
         return ["%s" %  (self.title_text)]
-        
+
     def handleActionItems(self, node):
         ret = []
         ret.append(self.title("Action Items"))
-        
-        
+
+
         self.open_tag('ul', ret)
         for sub in node.findall('node'):
             self.open_tag('li', ret)
             self.nest_text(sub, ret)
             self.close_tag('li', ret)
-        
+
         self.close_tag('ul', ret)
         return ret
 
     def show_user_time(self, name, curtime):
         return '%s (%s)' % (name, self.format_time(curtime))
-        
+
     def nest_text(self, node, ret):
         ret.append(self.escape(node.attrib['TEXT']))
         subnodes = node.findall('node')
@@ -247,7 +258,7 @@ class Mm2Notes:
                 self.open_tag('li', ret)
                 self.nest_text(sub, ret)
                 self.close_tag('li', ret)
-        
+
             self.close_tag('ul', ret)
 
     def title(self, name):
@@ -281,20 +292,20 @@ class Mm2Notes:
 
     def format_time(self, curtime):
         timesecs = (curtime - self.start_time) / (1000)
-        
-        min = timesecs // 60
+
+        minutes = timesecs // 60
         sec = timesecs % 60
-        
-        if min == 0 and sec == 0:
+
+        if minutes == 0 and sec == 0:
             t = time.localtime(self.start_time / 1000.0)
             tzn = time.tzname[0]
             return '%02d:%02d:%02d %s'  % (t[3], t[4], t[5], tzn)
-        if min == 0:
+        if minutes == 0:
             return '%d secs' % (sec)
         if sec == 0:
-            return '%d min' % (min)
-        return '%d min %d sec' % (min, sec)
-        
+            return '%d min' % (minutes)
+        return '%d min %d sec' % (minutes, sec)
+
 def parse_command_line():
     usage = """%prog <mmfile> -o [<htmloutput>]
 Create a FreeMind (.mm) document (see http://freemind.sourceforge.net/wiki/index.php/Main_Page)
@@ -302,30 +313,30 @@ the main node will be the title page and the lower nodes will be pages.
 """
     parser = OptionParser(usage)
     parser.add_option('-o', '--output', dest="outfile")
-    parser.add_option('-m', '--minutes', dest="order_by_time", 
+    parser.add_option('-m', '--minutes', dest="order_by_time",
         action='store_true',
         help="Order the minutes by time and show the time")
     (options, args) = parser.parse_args()
     if len(args) == 0:
         parser.print_usage()
         sys.exit(-1)
-    
+
     infile = args[0]
     if not infile.endswith('.mm'):
         print "Input file must end with '.mm'"
         parser.print_usage()
         sys.exit(-1)
-        
+
     outfile = sys.stdout
     if options.outfile:
         # Writing out the HTML in correct UTF-8 format is a little tricky.
         print "Outputting to '%s'" % (options.outfile)
         outfile = codecs.open(options.outfile, 'w', 'utf-8')
-    
+
     mm2notes = Mm2Notes()
     lines = mm2notes.open(infile)
     mm2notes.set_order_by_time(options.order_by_time)
-    
+
     mm2notes.write(outfile, lines)
 
 if __name__ == "__main__":

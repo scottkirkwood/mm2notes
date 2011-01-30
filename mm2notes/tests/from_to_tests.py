@@ -8,7 +8,9 @@ A detailed description of from_to_tests.
 
 __author__ = 'scottakirkwood@gmail.com (Scott Kirkwood)'
 
-import mm2notes.mm2notes as mm2notes
+import sys
+sys.path.append('..')
+import mm2notes
 import unittest
 import codecs
 import glob
@@ -22,7 +24,7 @@ class FromToTests(unittest.TestCase):
     outfile = codecs.open(test_name, 'w', 'utf-8')
     mm2n.set_order_by_time(False)
     mm2n.write(outfile, lines)
-    assert False == self.CompareFiles(html_file, test_name)
+    assert self.CompareFiles(html_file, test_name)
 
   def CompareFiles(self, good_file, test_file):
     diff = difflib.Differ()
