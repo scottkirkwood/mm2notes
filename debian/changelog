@@ -4,4 +4,4 @@ mm2notes (0.1.1-1) unstable; urgency=low
   * Applied patch for Issue 1 (thanks Ovid) which allows you to use the
     built in XML parser, when available.
 
- -- Scott Kirkwood <scottakirkwood@gmail.com>  Sat, 29 Jan 2011 19:43:39 +0500
+ -- Scott Kirkwood <scott@forusers.com>  Sat, 29 Jan 2011 19:43:39 +0500

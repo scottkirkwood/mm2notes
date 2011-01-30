@@ -125,7 +125,7 @@ Requirements
 
 """,
     author='Scott Kirkwood',
-    author_email='scottakirkwood@gmail.com',
+    author_email='scott@forusers.com',
     url='http://code.google.com/p/%s' % NAME,
     download_url='http://%s.googlecode.com/files/%s-%s.zip' % (NAME, NAME, VER),
     keywords=['mm', 'FreeMind', 'notes', 'XML', 'text', 'meeting', 'Python'],
